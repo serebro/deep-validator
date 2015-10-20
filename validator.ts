@@ -45,19 +45,25 @@ export class Validator
     {
         let _isObject = _.isObject(data);
 
+        // apply validators/sanitizers
         for (let i = 0, c = schema['##'].v.length; i < c; i ++) {
             let _isValidator = true,
                 _result = true,
                 _e = schema['##'].v[i];
 
+            // custom validator/sanitizer; sanitizer can modify data by reference (v, k <= key, d <= reference) and must return [true]
             if (_.isFunction(_e.v)) {
                 _isValidator = true;
                 _result = _e.m = _e.v(data, key, ref);
             } else {
+
+                // try [validator]
                 if (validator[_e.v]) {
                     _isValidator = _e.v.substr(0, 2) === 'is';
                     _result = validator[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
                 } else
+
+                // try [underscore]
                 if (_[_e.v]) {
                     _isValidator = _e.v.substr(0, 2) === 'is';
                     _result = _[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
@@ -75,6 +81,7 @@ export class Validator
             }
         }
 
+        // go through all nested in schema
         for (let k in schema) {
             let _message = messagePrefix ? messagePrefix + '.' + k : k;
 
@@ -105,6 +112,7 @@ export class Validator
             }
         }
 
+        // go through each element if data is array
         if (_.isArray(data) && schema['[]']) {
             for (let i = 0, c = data.length; i < c; i ++) {
                 if (this._validate(
