@@ -37,9 +37,9 @@ export class Validator
         ref?: any
     ): boolean
     {
-        if (_.isArray(data)) {
+        if (_.isArray(data) && schema['[]']) {
             for (let i = 0, c = data.length; i < c; i ++) {
-                if (schema['[]'] && this._validate(
+                if (this._validate(
                         data[i],
                         schema['[]'],
                         tryAll,
