@@ -49,11 +49,11 @@ var d = {
     },
 };
 
-console.log(t.notArr(false).tryAll().validate([ d, d, d, d, d, d ]));
+console.log(validator.notArr(false).tryAll().validate([ d, d, d, d, d, d ]));
 
 let message;
 
-while (message = t.getNextError()) {
+while (message = validator.getNextError()) {
     console.log(message);
 }
 ```
