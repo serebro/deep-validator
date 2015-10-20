@@ -165,7 +165,7 @@ export class Validator
                             let t = v[0].split(':');
 
                             if (t[0] === 'isExists') {
-                                _last[k]['##'].s = t[1];
+                                _last[k]['##'].s = t[1] || false;
                             } else
                             if (t[0] === 'default') {
                                 _last[k]['##'].d = v[1];
