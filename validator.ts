@@ -300,6 +300,10 @@ export class Validator
 
             this._validate(data, this._sarray, this._tryAll, this.errors, this._strict, '');
         } else {
+            if (_.isObject(data) === false) {
+                return false;
+            }
+
             this._validate(data, this._schema, this._tryAll, this.errors, this._strict, '');
         }
 
