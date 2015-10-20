@@ -12,7 +12,13 @@ export class Validator
         _nextError = null;
 
     protected
+        _sarray = { '##': { s: void 0, v: [] } };
+
+    protected
         _schema = { '##': { s: void 0, v: [] } };
+
+    protected
+        _notArr: boolean = true;
 
     protected
         _strict: boolean = false;
@@ -37,6 +43,68 @@ export class Validator
         ref?: any
     ): boolean
     {
+        let _isObject = _.isObject(data);
+
+        for (let i = 0, c = schema['##'].v.length; i < c; i ++) {
+            let _isValidator = true,
+                _result = true,
+                _e = schema['##'].v[i];
+
+            if (_.isFunction(_e.v)) {
+                _isValidator = true;
+                _result = _e.m = _e.v(data, key, ref);
+            } else {
+                if (validator[_e.v]) {
+                    _isValidator = _e.v.substr(0, 2) === 'is';
+                    _result = validator[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
+                } else
+                if (_[_e.v]) {
+                    _isValidator = _e.v.substr(0, 2) === 'is';
+                    _result = _[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
+                }
+            }
+
+            if (_isValidator) {
+                if (_result !== true) {
+                    errors[messagePrefix] = _e.m || false;
+
+                    return false;
+                }
+            } else {
+                key !== void 0 ? ref[key] = _result : null;
+            }
+        }
+
+        for (let k in schema) {
+            let _message = messagePrefix ? messagePrefix + '.' + k : k;
+
+            if (k !== '##' && k !== '[]') {
+                if (_isObject) {
+                    if (data[k]) {
+                        if (this._validate(data[k], schema[k], tryAll, errors, strict, _message, k, data) || tryAll) {
+                            continue;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    if (schema[k]['##'].d !== void 0) {
+                        data[k] = schema[k]['##'].d;
+
+                        continue;
+                    }
+                }
+
+                if (strict || schema[k]['##'].s !== void 0) {
+                    errors[_message] = schema[k]['##'].s || false;
+
+                    if (tryAll === false) {
+                        return false;
+                    }
+                }
+            }
+        }
+
         if (_.isArray(data) && schema['[]']) {
             for (let i = 0, c = data.length; i < c; i ++) {
                 if (this._validate(
@@ -51,68 +119,6 @@ export class Validator
                     ) === false
                 ) {
                     return false;
-                }
-            }
-        } else {
-            let _isObject = _.isObject(data);
-
-            for (let i = 0, c = schema['##'].v.length; i < c; i ++) {
-                let _isValidator = true,
-                    _result = true,
-                    _e = schema['##'].v[i];
-
-                if (_.isFunction(_e.v)) {
-                    _isValidator = true;
-                    _result = _e.m = _e.v(data, key, ref);
-                } else {
-                    if (validator[_e.v]) {
-                        _isValidator = _e.v.substr(0, 2) === 'is';
-                        _result = validator[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
-                    } else
-                    if (_[_e.v]) {
-                        _isValidator = _e.v.substr(0, 2) === 'is';
-                        _result = _[_e.v](data, _e.a[0], _e.a[1], _e.a[2], _e.a[3]);
-                    }
-                }
-
-                if (_isValidator) {
-                    if (_result !== true) {
-                        errors[messagePrefix] = _e.m || false;
-
-                        return false;
-                    }
-                } else {
-                    key !== void 0 ? ref[key] = _result : null;
-                }
-            }
-
-            for (let k in schema) {
-                let _message = messagePrefix ? messagePrefix + '.' + k : k;
-
-                if (k !== '##' && k !== '[]') {
-                    if (_isObject) {
-                        if (data[k]) {
-                            if (this._validate(data[k], schema[k], tryAll, errors, strict, _message, k, data) || tryAll) {
-                                continue;
-                            } else {
-                                return false;
-                            }
-                        }
-
-                        if (schema[k]['##'].d !== void 0) {
-                            data[k] = schema[k]['##'].d;
-
-                            continue;
-                        }
-                    }
-
-                    if (strict || schema[k]['##'].s !== void 0) {
-                        errors[_message] = schema[k]['##'].s || false;
-
-                        if (tryAll === false) {
-                            return false;
-                        }
-                    }
                 }
             }
         }
@@ -181,6 +187,8 @@ export class Validator
                 );
             }
         );
+
+        this._sarray['[]'] = this._schema;
     }
 
     /**
@@ -221,6 +229,22 @@ export class Validator
         }
 
         return this._nextError();
+    }
+
+    /**
+     * Set [notArr] mode. Validating data will be examined as object.
+     *
+     * @param value
+     *      Value.
+     * @returns {Validator}
+     */
+    notArr(
+        value: boolean = true
+    ): Validator
+    {
+        this._notArr = value;
+
+        return this;
     }
 
     /**
@@ -269,7 +293,15 @@ export class Validator
         this._nextError = null;
         this.errors = {};
 
-        this._validate(data, this._schema, this._tryAll, this.errors, this._strict, '');
+        if (_.isArray(data)) {
+            if (this._notArr) {
+                return false;
+            }
+
+            this._validate(data, this._sarray, this._tryAll, this.errors, this._strict, '');
+        } else {
+            this._validate(data, this._schema, this._tryAll, this.errors, this._strict, '');
+        }
 
         return this.passed = _.isEmpty(this.errors);
     }
