@@ -1,0 +1,7 @@
+{
+  "ambientDependencies": {
+    "lodash": "registry:dt/lodash#3.10.0+20160330154726",
+    "node": "registry:dt/node#4.0.0+20160330064709",
+    "validator": "registry:dt/validator#4.5.1+20160316155526"
+  }
+}

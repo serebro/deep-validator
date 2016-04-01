@@ -1,0 +1,42 @@
+{
+  "name": "deep-validator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "spec"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serebro/deep-validator.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/serebro/deep-validator/issues"
+  },
+  "homepage": "https://github.com/serebro/deep-validator#readme",
+  "engines": {
+    "node": ">= 0.12"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENCE",
+    "deep-validator.js",
+    "src",
+    "spec",
+    "tsconfig.json",
+    "typings.json"
+  ],
+  "dependencies": {
+    "lodash": "^4.7.0",
+    "validator": "^5.1.0"
+  },
+  "devDependencies": {
+    "jasmine": "^2.4.1"
+  }
+}

@@ -1,59 +1,44 @@
 ```javascript
 
+var Validator = require('deep-validator');
 
-import {Validator} from './lib/validator';
-
-
-let validator = new Validator({
-    'a.b':          [
-        'isObject:must be array',
-    ],
-    'a.b.c':        'isObject',
-    'a.d.[].e':     [
-        'isExists:must be defined',
-        'isString:must be text',
-        'escape',
-    ],
-    'a.e.[].e':     [
-        'isExists:must be defined',
-        'isString:must be text',
-        'escape',
-        function(v, k, d) {
-            d[k]+= '____';
-
-            return true;
-        }
-    ],
-    'a.f.[]':       'isObject',
-    'a.g':          [ [ 'default', 5 ] ],
-    'a.z':          'isExists:no!'
-});
-
-var d = {
-    a: {
-        b: [],
-        d: [
-            {
-                e: "5556"
-            },
-            {
-                e: 6
-            }
-        ],
-        e: [
-            {
-                e: '&&&'
-            }
-        ],
-        f: [ {} ]
-    },
+var schema = {
+	'a.b': ['isObject:must be array'],
+	'a.b.c': 'isObject',
+	'a.d.[].e': [
+		'isExists:must be defined',
+		'isString:must be text',
+		'escape',
+	],
+	'a.e.[].e': [
+		'isExists:must be defined',
+		'isString:must be text',
+		'escape',
+		function(v, k, d) {
+		d[k] += '____';
+		return true;
+		}
+	],
+	'a.f.[]': 'isObject',
+	'a.g': [['default', 5]],
+	'a.z': 'isExists:no!'
 };
 
-console.log(validator.notArr(false).tryAll().validate([ d, d, d, d, d, d ]));
+var data = {
+    a: {
+        b: [],
+        e: [{e: 'aaa'}],
+        f: [ {} ]
+    }
+};
 
-let message;
+let validator = new Validator(schema);
+var result = validator.validate([ d, d, d, d, d, d ]);
+console.log(result);
 
+var message;
 while (message = validator.getNextError()) {
     console.log(message);
 }
+
 ```

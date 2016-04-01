@@ -1,0 +1,22 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es5",
+		"sourceMap": true,
+		"inlineSourceMap": false,
+		"declaration": false,
+		"noImplicitAny": false,
+		"removeComments": false,
+		"noLib": false,
+		"allowJs": false,
+		"outDir": ".",
+		"sourceRoot": "."
+	},
+	"exclude": [
+		"node_modules",
+		"typings",
+		"dist",
+		"tests"
+	]
+}
